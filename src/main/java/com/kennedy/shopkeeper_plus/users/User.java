@@ -1,7 +1,7 @@
 package com.kennedy.shopkeeper_plus.users;
 
-import com.kennedy.shopkeeper_plus.BusinessTypes.BusinessType;
 import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
+import com.kennedy.shopkeeper_plus.businessTypes.BusinessType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

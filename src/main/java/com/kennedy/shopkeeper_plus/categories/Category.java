@@ -1,6 +1,7 @@
-package com.kennedy.shopkeeper_plus.BusinessTypes;
+package com.kennedy.shopkeeper_plus.categories;
 
 import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
+import com.kennedy.shopkeeper_plus.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,19 +10,26 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "business_types")
+@Table(name = "categories")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessType {
 
+public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "business_type_id")
-	private UUID businessTypeId;
+	@Column(name = "category_id")
+	private UUID id;
 
-	@Column(name = "business_type", nullable = false, length = 256)
-	private String businessTypeName;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	@Column(name = "category_name")
+	private String name;
+
+	@Column(name = "description")
+	private String description;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
