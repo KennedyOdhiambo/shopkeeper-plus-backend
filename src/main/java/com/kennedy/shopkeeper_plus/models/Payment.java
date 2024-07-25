@@ -1,27 +1,22 @@
-package com.kennedy.shopkeeper_plus.payments;
+package com.kennedy.shopkeeper_plus.models;
 
-import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
-import com.kennedy.shopkeeper_plus.creditDebt.CreditDebt;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Payment {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "payment_id")
-	private UUID id;
+public class Payment extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "credit_debt_id")
@@ -33,6 +28,4 @@ public class Payment {
 	@Column(name = "payment_date")
 	private LocalDateTime date;
 
-	@Enumerated(EnumType.STRING)
-	private EntityStatus status = EntityStatus.ACTIVE;
 }

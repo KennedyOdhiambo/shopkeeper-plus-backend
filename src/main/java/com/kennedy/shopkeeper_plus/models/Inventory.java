@@ -1,27 +1,23 @@
-package com.kennedy.shopkeeper_plus.inventories;
+package com.kennedy.shopkeeper_plus.models;
 
-import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
-import com.kennedy.shopkeeper_plus.items.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "inventory")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Inventory {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "inventory_id")
-	private UUID id;
+public class Inventory extends BaseEntity {
+
 
 	@ManyToOne
 	@JoinColumn(name = "item_id")
@@ -42,7 +38,5 @@ public class Inventory {
 	@Column(name = "last_updated")
 	private LocalDateTime lastUpdated;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private EntityStatus status = EntityStatus.ACTIVE;
+
 }

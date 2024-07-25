@@ -1,29 +1,24 @@
-package com.kennedy.shopkeeper_plus.creditDebt;
+package com.kennedy.shopkeeper_plus.models;
 
-import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
-import com.kennedy.shopkeeper_plus.customers.Customer;
-import com.kennedy.shopkeeper_plus.sales.Sales;
-import com.kennedy.shopkeeper_plus.users.User;
+import com.kennedy.shopkeeper_plus.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "credit_debt")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreditDebt {
+public class CreditDebt extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "credit_debt_id")
-	private UUID id;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -47,7 +42,7 @@ public class CreditDebt {
 	@Column(name = "transaction_type", nullable = false)
 	private TransactionType transactionType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private EntityStatus status = EntityStatus.ACTIVE;
+	@OneToMany(mappedBy = "creditDebt", fetch = FetchType.LAZY)
+	private List<Payment> payments;
+
 }

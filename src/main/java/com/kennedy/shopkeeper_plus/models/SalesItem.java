@@ -1,33 +1,26 @@
-package com.kennedy.shopkeeper_plus.sales.SalesItems;
+package com.kennedy.shopkeeper_plus.models;
 
-import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
-import com.kennedy.shopkeeper_plus.inventories.Inventory;
-import com.kennedy.shopkeeper_plus.items.Item;
-import com.kennedy.shopkeeper_plus.sales.Sales;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
 @Table(name = "sales_items")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class SalesItem {
+public class SalesItem extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "sales_item_id")
-	private UUID salesItemId;
 
 	@ManyToOne
 	@JoinColumn(name = "sales_id")
-	private Sales sales;
+	private Sales sale;
 
 	@ManyToOne
 	@JoinColumn(name = "item_id")
@@ -46,7 +39,5 @@ public class SalesItem {
 	@Column(name = "totalPrice")
 	private BigDecimal totalPrice;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private EntityStatus status = EntityStatus.ACTIVE;
+
 }

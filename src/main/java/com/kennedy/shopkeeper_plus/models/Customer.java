@@ -1,25 +1,21 @@
-package com.kennedy.shopkeeper_plus.customers;
+package com.kennedy.shopkeeper_plus.models;
 
-import com.kennedy.shopkeeper_plus.Utils.EntityStatus;
-import com.kennedy.shopkeeper_plus.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Customer extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "customer_id")
-	private UUID customerId;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -34,8 +30,8 @@ public class Customer {
 	@Column(name = "kra_pin", length = 256)
 	private String kraPin;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private EntityStatus status = EntityStatus.ACTIVE;
+	@OneToMany(mappedBy = "customer")
+	private List<Sales> sales;
+
 
 }
