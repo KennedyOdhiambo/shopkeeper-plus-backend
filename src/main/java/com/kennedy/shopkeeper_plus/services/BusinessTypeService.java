@@ -23,12 +23,7 @@ public class BusinessTypeService {
 
 	public BusinessTypeResponseDto createBusinessType(NewBusinessTypeDto businessTypeDto) {
 		try {
-			if (businessTypeDto.name() == null || businessTypeDto.name().trim().isEmpty()) {
-				return new BusinessTypeResponseDto(
-						"Business type name cannot be empty",
-						null
-				);
-			}
+			
 
 			Optional<BusinessType> existingBusinessType = businessTypeRepository.findByName(businessTypeDto.name());
 
@@ -94,7 +89,6 @@ public class BusinessTypeService {
 						existingBusinessType
 				);
 			}
-
 		} catch (Exception e) {
 			return new BusinessTypeResponseDto(
 					"An unexpected error occurred.PLease try again later",
@@ -110,8 +104,7 @@ public class BusinessTypeService {
 				return new BusinessTypeResponseMessage("Business type not found");
 			}
 
-			BusinessType existingBusinessType = existingBusinessTypeOptional.get();
-
+			var existingBusinessType = existingBusinessTypeOptional.get();
 			existingBusinessType.setStatus(EntityStatus.DELETED);
 			businessTypeRepository.save(existingBusinessType);
 
