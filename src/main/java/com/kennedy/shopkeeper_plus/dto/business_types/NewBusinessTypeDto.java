@@ -1,4 +1,4 @@
-package com.kennedy.shopkeeper_plus.dto;
+package com.kennedy.shopkeeper_plus.dto.business_types;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.NewUserDto;
+import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
 import com.kennedy.shopkeeper_plus.models.BusinessType;
 import com.kennedy.shopkeeper_plus.models.User;
 import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;

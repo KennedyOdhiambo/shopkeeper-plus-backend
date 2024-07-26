@@ -1,8 +1,9 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.BusinessTypeResponseDto;
-import com.kennedy.shopkeeper_plus.dto.NewBusinessTypeDto;
-import com.kennedy.shopkeeper_plus.dto.UpdateBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.dto.business_types.BusinessTypeResponseDto;
+import com.kennedy.shopkeeper_plus.dto.business_types.BusinessTypeResponseMessage;
+import com.kennedy.shopkeeper_plus.dto.business_types.NewBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.dto.business_types.UpdateBusinessTypeDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.models.BusinessType;
 import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BusinessTypeService {
@@ -100,4 +102,24 @@ public class BusinessTypeService {
 			);
 		}
 	}
+
+	public BusinessTypeResponseMessage deleteBusinessType(UUID businessTypeId) {
+		try {
+			Optional<BusinessType> existingBusinessTypeOptional = businessTypeRepository.findById(businessTypeId);
+			if (existingBusinessTypeOptional.isEmpty() || existingBusinessTypeOptional.get().getStatus() != EntityStatus.ACTIVE) {
+				return new BusinessTypeResponseMessage("Business type not found");
+			}
+
+			BusinessType existingBusinessType = existingBusinessTypeOptional.get();
+
+			existingBusinessType.setStatus(EntityStatus.DELETED);
+			businessTypeRepository.save(existingBusinessType);
+
+			return new BusinessTypeResponseMessage("Business type successfully deleted");
+
+		} catch (Exception e) {
+			return new BusinessTypeResponseMessage("An unexpected error occurred.Please try again later");
+		}
+	}
+
 }

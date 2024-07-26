@@ -1,4 +1,4 @@
-package com.kennedy.shopkeeper_plus.dto;
+package com.kennedy.shopkeeper_plus.dto.user;
 
 
 import jakarta.validation.constraints.NotBlank;

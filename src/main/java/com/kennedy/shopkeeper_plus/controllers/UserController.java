@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.controllers;
 
-import com.kennedy.shopkeeper_plus.dto.NewUserDto;
+import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
 import com.kennedy.shopkeeper_plus.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
