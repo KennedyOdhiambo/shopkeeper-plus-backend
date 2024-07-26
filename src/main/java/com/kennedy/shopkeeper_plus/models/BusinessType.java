@@ -1,9 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,6 +19,6 @@ public class BusinessType extends BaseEntity {
 	@Column(name = "business_type", nullable = false, length = 256, unique = true)
 	private String name;
 
-	@OneToMany(mappedBy = "businessType")
+	@OneToMany(mappedBy = "businessType", fetch = FetchType.LAZY)
 	private List<User> users;
 }
