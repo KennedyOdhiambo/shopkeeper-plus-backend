@@ -21,4 +21,6 @@ public class BusinessType extends BaseEntity {
 
 	@OneToMany(mappedBy = "businessType", fetch = FetchType.LAZY)
 	private List<User> users;
+
+
 }

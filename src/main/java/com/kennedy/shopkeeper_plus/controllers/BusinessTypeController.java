@@ -18,16 +18,13 @@ public class BusinessTypeController {
 
 	private final BusinessTypeService businessTypeService;
 
-
 	public BusinessTypeController(BusinessTypeService businessTypeService) {
 		this.businessTypeService = businessTypeService;
 	}
 
 	@PostMapping("/create")
 	public BusinessTypeResponseDto createBusinessType(
-			@Valid
-			@RequestBody
-			NewBusinessTypeDto newBusinessTypeDto) {
+			@Valid @RequestBody NewBusinessTypeDto newBusinessTypeDto) {
 		return businessTypeService.createBusinessType(newBusinessTypeDto);
 	}
 
@@ -38,9 +35,7 @@ public class BusinessTypeController {
 
 	@PatchMapping("/update")
 	public BusinessTypeResponseDto updateBusinessType(
-			@Valid
-			@RequestBody
-			UpdateBusinessTypeDto updateBusinessTypeDto) {
+			@Valid @RequestBody UpdateBusinessTypeDto updateBusinessTypeDto) {
 		return businessTypeService.updateBusinessType(updateBusinessTypeDto);
 	}
 

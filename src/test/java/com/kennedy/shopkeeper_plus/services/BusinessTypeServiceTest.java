@@ -1,29 +1,87 @@
 package com.kennedy.shopkeeper_plus.services;
 
+import com.kennedy.shopkeeper_plus.dto.business_types.BusinessTypeResponseDto;
+import com.kennedy.shopkeeper_plus.dto.business_types.NewBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.dto.business_types.UpdateBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.enums.EntityStatus;
+import com.kennedy.shopkeeper_plus.models.BusinessType;
+import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
+
+
 class BusinessTypeServiceTest {
+
+	@Mock
+	private BusinessTypeRepository businessTypeRepository;
+
+	@Mock
+	private BusinessTypeService businessTypeService;
+
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+		businessTypeService = new BusinessTypeService(businessTypeRepository);
 	}
 
 	@Test
-	void createBusinessType() {
+	public void test_create_business_type_duplicate_name() {
+		NewBusinessTypeDto newBusinessTypeDto = new NewBusinessTypeDto("DuplicateName");
+		BusinessType existingBusinessType = new BusinessType();
+		existingBusinessType.setName("DuplicateName");
+
+
+		when(businessTypeRepository.findByName("DuplicateName")).thenReturn(Optional.of(existingBusinessType));
+
+		BusinessTypeResponseDto response = businessTypeService.createBusinessType(newBusinessTypeDto);
+
+		assertEquals("Business type with similar name already exists", response.message());
+		assertNull(response.businessType());
 	}
 
 	@Test
-	void getActiveBusinessTypes() {
+	public void should_return_active_business_types() {
+		var activeBusinessType = new BusinessType();
+		activeBusinessType.setName("active business 1");
+		activeBusinessType.setStatus(EntityStatus.ACTIVE);
+
+		var deletedBusinessType = new BusinessType();
+		deletedBusinessType.setName("active business 2");
+		deletedBusinessType.setStatus(EntityStatus.ACTIVE);
+
+		List<BusinessType> businessTypesLIst = Arrays.asList(activeBusinessType, deletedBusinessType);
+
+		when(businessTypeRepository.findByStatus(EntityStatus.ACTIVE)).thenReturn(businessTypesLIst);
+
+		List<BusinessType> result = businessTypeService.getActiveBusinessTypes();
+
+		assertEquals(2, result.size());
+		assertEquals("active business 1", result.get(0).getName());
+		assertEquals("active business 2", result.get(1).getName());
+
 	}
 
 	@Test
-	void updateBusinessType() {
+	public void should_return_error_if_business_type_does_not_exist() {
+		UpdateBusinessTypeDto dto = new UpdateBusinessTypeDto(UUID.randomUUID(), "New name");
+		when(businessTypeRepository.findById(dto.id())).thenReturn(Optional.empty());
+
+		BusinessTypeResponseDto response = businessTypeService.updateBusinessType(dto);
+
+		assertEquals("Business type does not exist", response.message());
+		assertEquals(null, response.businessType());
 	}
 
-	@Test
-	void deleteBusinessType() {
-	}
 }
