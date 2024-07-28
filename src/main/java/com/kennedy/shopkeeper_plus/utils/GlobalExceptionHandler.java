@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ResponseDto> handleGeneralException(
 			Exception ex) {
 		ex.printStackTrace();
-		
+
 		ResponseDto response = new ResponseDto(
 				ResponseStatus.fail,
 				"An unexpected error occurred",

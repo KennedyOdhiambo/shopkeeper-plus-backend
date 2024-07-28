@@ -16,9 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserService {
+
 
 	private final UserRepository userRepository;
 	private final BusinessTypeRepository businessTypeRepository;
@@ -116,5 +118,19 @@ public class UserService {
 				)
 		);
 
+	}
+
+	public ResponseDto deleteUser(UUID userId) {
+		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+		user.setStatus(EntityStatus.DELETED);
+		userRepository.save(user);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"user account deleted successfully",
+				null
+		);
 	}
 }

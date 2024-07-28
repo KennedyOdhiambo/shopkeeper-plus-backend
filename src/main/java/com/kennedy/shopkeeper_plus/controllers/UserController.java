@@ -7,6 +7,8 @@ import com.kennedy.shopkeeper_plus.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -33,6 +35,12 @@ public class UserController {
 	public ResponseDto updateUser(
 			@Valid @RequestBody UpdateUserDto updateUserDto) {
 		return userService.updateUser(updateUserDto);
+	}
+
+	@DeleteMapping("/delete/{id}")
+	public ResponseDto deleteUser(
+			@PathVariable UUID id) {
+		return userService.deleteUser(id);
 	}
 
 }
