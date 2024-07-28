@@ -2,6 +2,7 @@ package com.kennedy.shopkeeper_plus.services;
 
 import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
+import com.kennedy.shopkeeper_plus.dto.user.UpdatePasswordDto;
 import com.kennedy.shopkeeper_plus.dto.user.UpdateUserDto;
 import com.kennedy.shopkeeper_plus.dto.user.UserResponseDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
@@ -84,6 +85,26 @@ public class UserService {
 		);
 	}
 
+	public ResponseDto getUserById(UUID userId) {
+		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+		UserResponseDto userResponseDto = new UserResponseDto(
+				user.getFullName(),
+				user.getPhoneNumber(),
+				user.getBusinessName(),
+				user.getBusinessLocation(),
+				user.getDateJoined(),
+				user.getBusinessType()
+		);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"user",
+				userResponseDto
+		);
+	}
+
 	public ResponseDto updateUser(UpdateUserDto updateUserDto) {
 
 		var user = userRepository.findByIdAndStatus(updateUserDto.id(), EntityStatus.ACTIVE)
@@ -119,6 +140,33 @@ public class UserService {
 		);
 
 	}
+
+	public ResponseDto updatePassword(UpdatePasswordDto updatePasswordDto) {
+
+		var user = userRepository.findByIdAndStatus(updatePasswordDto.userId(), EntityStatus.ACTIVE)
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+		if (passwordEncoder.matches(updatePasswordDto.oldPassword(), user.getPassword())) {
+			String newHashedPassword = passwordEncoder.encode(updatePasswordDto.newPassword());
+			user.setPassword(newHashedPassword);
+			userRepository.save(user);
+
+			return new ResponseDto(
+					ResponseStatus.success,
+					"password successfully updated",
+					null
+			);
+
+		}
+
+		return new ResponseDto(
+				ResponseStatus.fail,
+				"Failed to update, passwords do not match",
+				null
+		);
+
+	}
+
 
 	public ResponseDto deleteUser(UUID userId) {
 		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
