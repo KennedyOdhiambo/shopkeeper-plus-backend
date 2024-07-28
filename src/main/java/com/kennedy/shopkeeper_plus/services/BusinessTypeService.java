@@ -1,15 +1,16 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.business_types.BusinessTypeResponseDto;
-import com.kennedy.shopkeeper_plus.dto.business_types.BusinessTypeResponseMessage;
+import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.NewBusinessTypeDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.UpdateBusinessTypeDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
+import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.BusinessType;
 import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;
+import com.kennedy.shopkeeper_plus.utils.ResourceAlreadyExistsException;
+import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,102 +18,81 @@ import java.util.UUID;
 public class BusinessTypeService {
 	private final BusinessTypeRepository businessTypeRepository;
 
+
 	public BusinessTypeService(BusinessTypeRepository businessTypeRepository) {
 		this.businessTypeRepository = businessTypeRepository;
 	}
 
-	public BusinessTypeResponseDto createBusinessType(NewBusinessTypeDto businessTypeDto) {
-		try {
-			
+	public ResponseDto createBusinessType(NewBusinessTypeDto businessTypeDto) {
+		Optional<BusinessType> existingBusinessType = businessTypeRepository.findByName(businessTypeDto.name());
 
-			Optional<BusinessType> existingBusinessType = businessTypeRepository.findByName(businessTypeDto.name());
-
-			if (existingBusinessType.isPresent()) {
-				return new BusinessTypeResponseDto(
-						"Business type with similar name already exists",
-						null
-				);
-			}
-
-			BusinessType businessType = new BusinessType();
-			businessType.setName(businessTypeDto.name());
-			BusinessType savedBusinessType = businessTypeRepository.save(businessType);
-
-			return new BusinessTypeResponseDto(
-					"Business type created successfully",
-					savedBusinessType
-			);
-
-		} catch (Exception e) {
-			return new BusinessTypeResponseDto(
-					"An unexpected error occurred.PLease try again later",
-					null
-			);
+		if (existingBusinessType.isPresent()) {
+			throw new ResourceAlreadyExistsException("Business type with similar name already exists");
 		}
 
+		BusinessType businessType = new BusinessType();
+		businessType.setName(businessTypeDto.name());
+		BusinessType savedBusinessType = businessTypeRepository.save(businessType);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Business type created successfully",
+				savedBusinessType
+		);
 	}
 
-	public List<BusinessType> getActiveBusinessTypes() {
-		return businessTypeRepository.findByStatus(EntityStatus.ACTIVE);
+
+	public ResponseDto getActiveBusinessTypes() {
+		var businessTypes = businessTypeRepository.findByStatus(EntityStatus.ACTIVE);
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Business Types",
+				businessTypes
+		);
 	}
 
-	public BusinessTypeResponseDto updateBusinessType(UpdateBusinessTypeDto updateBusinessTypeDto) {
-		try {
-			Optional<BusinessType> existingBusinessTypeOptional = businessTypeRepository.findById(updateBusinessTypeDto.id());
-			if (existingBusinessTypeOptional.isEmpty()) {
-				return new BusinessTypeResponseDto(
-						"Business type does not exist",
-						null
-				);
+
+	public ResponseDto updateBusinessType(UpdateBusinessTypeDto updateBusinessTypeDto) {
+		Optional<BusinessType> existingBusinessTypeOptional = businessTypeRepository.findById(updateBusinessTypeDto.id());
+		if (existingBusinessTypeOptional.isEmpty()) {
+			throw new ResourceNotFoundException("Business type does not exist");
+		}
+
+		BusinessType existingBusinessType = existingBusinessTypeOptional.get();
+		if (!existingBusinessType.getName().equals(updateBusinessTypeDto.name())) {
+			Optional<BusinessType> businessTypeWithNewName = businessTypeRepository.findByName(updateBusinessTypeDto.name());
+			if (businessTypeWithNewName.isPresent() && !businessTypeWithNewName.get().getId().equals(updateBusinessTypeDto.id())) {
+				throw new ResourceAlreadyExistsException("Business type with this name already exists");
 			}
 
-			BusinessType existingBusinessType = existingBusinessTypeOptional.get();
-			if (!existingBusinessType.getName().equals(updateBusinessTypeDto.name())) {
-				Optional<BusinessType> businessTypeWithNewName = businessTypeRepository.findByName(updateBusinessTypeDto.name());
-				if (businessTypeWithNewName.isPresent() && !businessTypeWithNewName.get().getId().equals(updateBusinessTypeDto.id())) {
-					return new BusinessTypeResponseDto(
-							"Business type with this name already exists",
-							null
-					);
-				}
+			existingBusinessType.setName(updateBusinessTypeDto.name());
+			BusinessType updatedBusinessType = businessTypeRepository.save(existingBusinessType);
 
-				existingBusinessType.setName(updateBusinessTypeDto.name());
-				BusinessType updatedBusinessType = businessTypeRepository.save(existingBusinessType);
-
-				return new BusinessTypeResponseDto(
-						"Business type updated successfully",
-						updatedBusinessType
-				);
-			} else {
-				return new BusinessTypeResponseDto(
-						"No changes were made to the business type",
-						existingBusinessType
-				);
-			}
-		} catch (Exception e) {
-			return new BusinessTypeResponseDto(
-					"An unexpected error occurred.PLease try again later",
-					null
+			return new ResponseDto(
+					ResponseStatus.success,
+					"Business type updated successfully",
+					updatedBusinessType
 			);
+		} else {
+			throw new ResourceAlreadyExistsException("No changes were made to the business type");
 		}
 	}
 
-	public BusinessTypeResponseMessage deleteBusinessType(UUID businessTypeId) {
-		try {
-			Optional<BusinessType> existingBusinessTypeOptional = businessTypeRepository.findById(businessTypeId);
-			if (existingBusinessTypeOptional.isEmpty() || existingBusinessTypeOptional.get().getStatus() != EntityStatus.ACTIVE) {
-				return new BusinessTypeResponseMessage("Business type not found");
-			}
-
-			var existingBusinessType = existingBusinessTypeOptional.get();
-			existingBusinessType.setStatus(EntityStatus.DELETED);
-			businessTypeRepository.save(existingBusinessType);
-
-			return new BusinessTypeResponseMessage("Business type successfully deleted");
-
-		} catch (Exception e) {
-			return new BusinessTypeResponseMessage("An unexpected error occurred.Please try again later");
+	public ResponseDto deleteBusinessType(UUID businessTypeId) {
+		Optional<BusinessType> existingBusinessTypeOptional = businessTypeRepository.findById(businessTypeId);
+		if (existingBusinessTypeOptional.isEmpty() || existingBusinessTypeOptional.get().getStatus() != EntityStatus.ACTIVE) {
+			throw new ResourceNotFoundException("Business type not found");
 		}
+
+		var existingBusinessType = existingBusinessTypeOptional.get();
+		existingBusinessType.setStatus(EntityStatus.DELETED);
+		businessTypeRepository.save(existingBusinessType);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Business type successfully deleted",
+				null
+		);
 	}
 
 }
