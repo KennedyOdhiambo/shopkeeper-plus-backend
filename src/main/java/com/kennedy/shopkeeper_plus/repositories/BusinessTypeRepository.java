@@ -12,4 +12,6 @@ public interface BusinessTypeRepository extends JpaRepository<BusinessType, UUID
 	List<BusinessType> findByStatus(EntityStatus status);
 
 	Optional<BusinessType> findByName(String name);
+
+	Optional<BusinessType> findByIdAndStatus(UUID id, EntityStatus status);
 }

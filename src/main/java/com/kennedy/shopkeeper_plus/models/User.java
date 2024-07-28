@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,12 +45,15 @@ public class User extends BaseEntity {
 	@Column(name = "date_joined", nullable = false)
 	private LocalDateTime dateJoined;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Sales> sales;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Customer> customers;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Category> categories;
 
