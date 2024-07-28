@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class BusinessType extends BaseEntity {
 	@Column(name = "business_type", nullable = false, length = 256, unique = true)
 	private String name;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "businessType", fetch = FetchType.LAZY)
 	private List<User> users;
 

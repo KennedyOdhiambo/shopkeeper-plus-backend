@@ -1,15 +1,18 @@
 package com.kennedy.shopkeeper_plus.services;
 
+import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
-import com.kennedy.shopkeeper_plus.models.BusinessType;
+import com.kennedy.shopkeeper_plus.dto.user.UserResponseDto;
+import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.User;
 import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;
 import com.kennedy.shopkeeper_plus.repositories.UserRepository;
+import com.kennedy.shopkeeper_plus.utils.ResourceAlreadyExistsException;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 public class UserService {
@@ -24,31 +27,43 @@ public class UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public String createUser(NewUserDto newUserDto) {
-		Optional<BusinessType> businessType = businessTypeRepository.findById(newUserDto.businessType());
-		if (businessType.isEmpty()) {
+	public ResponseDto createUser(NewUserDto newUserDto) {
+		var businessTypeOptional = businessTypeRepository.findById(newUserDto.businessType());
+		if (businessTypeOptional.isEmpty()) {
 			throw new ResourceNotFoundException("Business type not found");
 		}
+		var businessType = businessTypeOptional.get();
 
-		Optional<User> existingUser = userRepository.findByPhoneNumber(newUserDto.phoneNumber());
-		if (existingUser.isEmpty()) {
-			throw new RuntimeException("Phone number already exists");
+		var existingUserOptional = userRepository.findByPhoneNumber(newUserDto.phoneNumber());
+		if (existingUserOptional.isPresent()) {
+			throw new ResourceAlreadyExistsException("User with the phone number already exists");
 		}
 
-		String hashedPassword = passwordEncoder.encode(newUserDto.password());
+		var hashedPassword = passwordEncoder.encode(newUserDto.password());
+		var now = LocalDateTime.now();
 
-		User user = new User();
+		var user = new User();
 		user.setFullName(newUserDto.fullName());
-		user.setPhoneNumber(newUserDto.phoneNumber());
 		user.setPhoneNumber(newUserDto.phoneNumber());
 		user.setPassword(hashedPassword);
 		user.setBusinessName(newUserDto.businessName());
-		user.setBusinessType(businessType.get());
+		user.setBusinessType(businessType);
 		user.setBusinessLocation(newUserDto.businessLocation());
+		user.setDateJoined(now);
 
 		userRepository.save(user);
 
-		return "User created successfully";
+		var newUser = new UserResponseDto(user.getFullName(),
+				user.getPhoneNumber(),
+				user.getBusinessName(),
+				user.getBusinessLocation(),
+				user.getDateJoined(),
+				businessType
+		);
 
+		return new ResponseDto(
+				ResponseStatus.success,
+				"User account successfully created",
+				newUser);
 	}
 }

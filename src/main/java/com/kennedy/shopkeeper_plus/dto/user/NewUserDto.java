@@ -2,6 +2,7 @@ package com.kennedy.shopkeeper_plus.dto.user;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
@@ -17,14 +18,14 @@ public record NewUserDto(
 		String phoneNumber,
 
 		@NotBlank(message = "Password is required")
-		@Size(min = 8, max = 256, message = "Password must be between 8-256 characters")
+		@Size(min = 6, max = 256, message = "Password must be between 8-256 characters")
 		String password,
 
 		@NotBlank(message = "Business name is required")
 		@Size(max = 256, message = "Business name must be les than 256 characters")
 		String businessName,
 
-		@NotBlank(message = "Business type is required")
+		@NotNull(message = "Business type is required")
 		UUID businessType,
 
 		@NotBlank(message = "Business location is required")

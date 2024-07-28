@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class User extends BaseEntity {
 	private String businessName;
 
 	@ManyToOne
+	@JsonManagedReference
 	@JoinColumn(name = "business_type_Id")
 	private BusinessType businessType;
 
