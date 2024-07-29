@@ -1,4 +1,4 @@
-package com.kennedy.shopkeeper_plus.config;
+package com.kennedy.shopkeeper_plus.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

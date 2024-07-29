@@ -13,9 +13,11 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ResponseDto> handleValidationExceptions(
 			MethodArgumentNotValidException ex) {
+
 		List<String> errors = ex.getBindingResult()
 				                      .getFieldErrors()
 				                      .stream()
@@ -26,7 +28,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
-
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ResponseDto> handleResourceNotFoundException(
 			ResourceNotFoundException ex) {
@@ -34,7 +35,6 @@ public class GlobalExceptionHandler {
 				ResponseStatus.fail, ex.getMessage(), null);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
-
 
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
 	public ResponseEntity<ResponseDto> handleResourceAlreadyExistsException(
@@ -46,11 +46,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
-
 	@ExceptionHandler(Exception.class)
+
 	public ResponseEntity<ResponseDto> handleGeneralException(
 			Exception ex) {
-		ex.printStackTrace();
 
 		ResponseDto response = new ResponseDto(
 				ResponseStatus.fail,
