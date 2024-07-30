@@ -1,7 +1,7 @@
 package com.kennedy.shopkeeper_plus.utils;
 
-public class JwtGenerationEXception extends RuntimeException {
-	public JwtGenerationEXception(String message) {
+public class JwtGenerationException extends RuntimeException {
+	public JwtGenerationException(String message) {
 		super(message);
 	}
 }

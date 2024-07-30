@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.utils;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 
 @ControllerAdvice
@@ -56,6 +58,42 @@ public class GlobalExceptionHandler {
 				"An unexpected error occurred",
 				null);
 
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ResponseDto> handleAuthenticationException(AuthenticationException ex) {
+		ResponseDto response = new ResponseDto(
+				ResponseStatus.fail,
+				"Authentication failed: " + ex.getMessage(),
+				null);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+
+	@ExceptionHandler(JWTVerificationException.class)
+	public ResponseEntity<ResponseDto> handleJwtVerificationException(JWTVerificationException ex) {
+		ResponseDto response = new ResponseDto(
+				ResponseStatus.fail,
+				"JWT verification failed: " + ex.getMessage(),
+				null);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+
+	@ExceptionHandler(AuthenticationFailedException.class)
+	public ResponseEntity<ResponseDto> handleAuthenticationFailedException(AuthenticationFailedException ex) {
+		ResponseDto response = new ResponseDto(
+				ResponseStatus.fail,
+				ex.getMessage(),
+				null);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+
+	@ExceptionHandler(JwtGenerationException.class)
+	public ResponseEntity<ResponseDto> handleJwtGenerationException(JwtGenerationException ex) {
+		ResponseDto response = new ResponseDto(
+				ResponseStatus.fail,
+				ex.getMessage(),
+				null);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
