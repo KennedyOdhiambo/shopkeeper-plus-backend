@@ -58,6 +58,7 @@ public class UserService {
 		user.setBusinessType(businessType);
 		user.setBusinessLocation(newUserDto.businessLocation());
 		user.setDateJoined(now);
+		user.setUsername(newUserDto.phoneNumber());
 
 		userRepository.save(user);
 

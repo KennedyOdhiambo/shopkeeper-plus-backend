@@ -2,6 +2,7 @@ package com.kennedy.shopkeeper_plus.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kennedy.shopkeeper_plus.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,9 @@ public class User extends BaseEntity implements UserDetails {
 	@Column(name = "full_name", nullable = false, length = 256)
 	private String fullName;
 
+	@Column(name = "username", nullable = false, length = 256)
+	private String username;
+
 	@Column(name = "phone_number", nullable = false, length = 256, unique = true)
 	private String phoneNumber;
 
@@ -35,6 +40,10 @@ public class User extends BaseEntity implements UserDetails {
 
 	@Column(name = "business_name", nullable = false, length = 256)
 	private String businessName;
+
+	@Column(name = "role")
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	@ManyToOne
 	@JsonManagedReference
@@ -63,13 +72,31 @@ public class User extends BaseEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of();
+		return List.of(new SimpleGrantedAuthority(role.name()));
 	}
 
 	@Override
 	public String getUsername() {
-		return phoneNumber;
+		return username;
 	}
 
-	
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 }

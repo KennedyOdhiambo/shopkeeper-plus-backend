@@ -1,8 +1,9 @@
 package com.kennedy.shopkeeper_plus.utils;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,9 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.naming.AuthenticationException;
 import java.util.List;
 
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
+	private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ResponseDto> handleValidationExceptions(
@@ -53,6 +55,8 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ResponseDto> handleGeneralException(
 			Exception ex) {
 
+		logger.error(ex.getMessage());
+
 		ResponseDto response = new ResponseDto(
 				ResponseStatus.fail,
 				"An unexpected error occurred",
@@ -70,14 +74,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 
-	@ExceptionHandler(JWTVerificationException.class)
-	public ResponseEntity<ResponseDto> handleJwtVerificationException(JWTVerificationException ex) {
-		ResponseDto response = new ResponseDto(
-				ResponseStatus.fail,
-				"JWT verification failed: " + ex.getMessage(),
-				null);
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	}
 
 	@ExceptionHandler(AuthenticationFailedException.class)
 	public ResponseEntity<ResponseDto> handleAuthenticationFailedException(AuthenticationFailedException ex) {
@@ -94,6 +90,8 @@ public class GlobalExceptionHandler {
 				ResponseStatus.fail,
 				ex.getMessage(),
 				null);
+
+
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 

@@ -1,0 +1,29 @@
+2024-07-30 23:23:34,871 INFO o.h.v.i.u.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2024-07-30 23:23:34,910 INFO o.s.b.StartupInfoLogger [main] Starting ShopkeeperPlusApplication using Java 22.0.2 with PID 99970 (/home/kennedy/Desktop/canvas/shopkeeper-plus-backend/target/classes started by kennedy in /home/kennedy/Desktop/canvas/shopkeeper-plus-backend)
+2024-07-30 23:23:34,916 INFO o.s.b.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-07-30 23:23:35,806 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-30 23:23:35,879 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 65 ms. Found 2 JPA repository interfaces.
+2024-07-30 23:23:36,637 INFO o.s.b.w.e.t.TomcatWebServer [main] Tomcat initialized with port 8080 (http)
+2024-07-30 23:23:36,654 INFO o.a.j.l.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-30 23:23:36,657 INFO o.a.j.l.DirectJDKLog [main] Starting service [Tomcat]
+2024-07-30 23:23:36,658 INFO o.a.j.l.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.26]
+2024-07-30 23:23:36,707 INFO o.a.j.l.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2024-07-30 23:23:36,710 INFO o.s.b.w.s.c.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1727 ms
+2024-07-30 23:23:36,756 WARN o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-30 23:23:36,903 INFO o.h.j.i.u.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-30 23:23:36,954 INFO o.h.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-07-30 23:23:36,990 INFO o.h.c.i.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-07-30 23:23:37,294 INFO o.s.o.j.p.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-30 23:23:37,327 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Starting...
+2024-07-30 23:23:39,603 INFO c.z.h.p.HikariPool [main] HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@573870cb
+2024-07-30 23:23:39,606 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Start completed.
+2024-07-30 23:23:41,632 INFO o.h.e.t.j.p.i.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-07-30 23:23:50,253 INFO o.s.o.j.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-30 23:23:50,864 INFO o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer [main] Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2024-07-30 23:23:50,865 WARN o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [main] Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2024-07-30 23:23:51,279 INFO o.a.j.l.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8080"]
+2024-07-30 23:23:51,292 INFO o.s.b.w.e.t.TomcatWebServer [main] Tomcat started on port 8080 (http) with context path '/shopkeeper-plus/v1'
+2024-07-30 23:23:51,302 INFO o.s.b.StartupInfoLogger [main] Started ShopkeeperPlusApplication in 16.82 seconds (process running for 17.983)
+2024-07-30 23:27:45,635 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-30 23:27:45,638 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2024-07-30 23:27:45,646 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
