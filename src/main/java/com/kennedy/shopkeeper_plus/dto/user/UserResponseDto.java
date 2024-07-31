@@ -5,6 +5,8 @@ import com.kennedy.shopkeeper_plus.models.BusinessType;
 import java.time.LocalDateTime;
 
 public record UserResponseDto(
+		String accessToken,
+
 		String fullName,
 
 		String phoneNumber,

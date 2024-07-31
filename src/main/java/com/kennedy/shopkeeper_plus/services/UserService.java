@@ -7,15 +7,14 @@ import com.kennedy.shopkeeper_plus.dto.user.UpdateUserDto;
 import com.kennedy.shopkeeper_plus.dto.user.UserResponseDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
+import com.kennedy.shopkeeper_plus.enums.Role;
 import com.kennedy.shopkeeper_plus.models.User;
 import com.kennedy.shopkeeper_plus.repositories.BusinessTypeRepository;
 import com.kennedy.shopkeeper_plus.repositories.UserRepository;
+import com.kennedy.shopkeeper_plus.security.JwtService;
 import com.kennedy.shopkeeper_plus.utils.ResourceAlreadyExistsException;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import com.kennedy.shopkeeper_plus.utils.Utils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +22,25 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
 
 	private final UserRepository userRepository;
 	private final BusinessTypeRepository businessTypeRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
-	public UserService(UserRepository userRepository, BusinessTypeRepository businessTypeRepository, PasswordEncoder passwordEncoder) {
+	public UserService(JwtService jwtService, UserRepository userRepository, BusinessTypeRepository businessTypeRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.businessTypeRepository = businessTypeRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
 	}
 
 	public ResponseDto createUser(NewUserDto newUserDto) {
 		var businessTypeOptional = businessTypeRepository.findById(newUserDto.businessType());
+
+
 		if (businessTypeOptional.isEmpty()) {
 			throw new ResourceNotFoundException("Business type not found");
 		}
@@ -50,10 +53,9 @@ public class UserService implements UserDetailsService {
 		}
 
 		var hashedPassword = passwordEncoder.encode(newUserDto.password());
-
 		var now = LocalDateTime.now();
 
-		var user = new User();
+		User user = new User();
 		user.setFullName(newUserDto.fullName());
 		user.setPhoneNumber(formattedPhoneNumber);
 		user.setPassword(hashedPassword);
@@ -62,16 +64,21 @@ public class UserService implements UserDetailsService {
 		user.setBusinessLocation(newUserDto.businessLocation());
 		user.setDateJoined(now);
 		user.setUsername(newUserDto.phoneNumber());
+		user.setRole(Role.USER);
 
-		userRepository.save(user);
+		user = userRepository.save(user);
+		var accessToken = jwtService.generateAccessToken(user);
 
-		var newUser = new UserResponseDto(user.getFullName(),
+		var newUser = new UserResponseDto(
+				accessToken,
+				user.getFullName(),
 				user.getPhoneNumber(),
 				user.getBusinessName(),
 				user.getBusinessLocation(),
 				user.getDateJoined(),
 				businessType
 		);
+
 
 		return new ResponseDto(
 				ResponseStatus.success,
@@ -92,8 +99,10 @@ public class UserService implements UserDetailsService {
 	public ResponseDto getUserById(UUID userId) {
 		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
 				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		var accessToken = "";
 
 		UserResponseDto userResponseDto = new UserResponseDto(
+				accessToken,
 				user.getFullName(),
 				user.getPhoneNumber(),
 				user.getBusinessName(),
@@ -129,11 +138,13 @@ public class UserService implements UserDetailsService {
 		user.setBusinessLocation(updateUserDto.businessLocation());
 
 		userRepository.save(user);
+		var accessToken = "";
 
 		return new ResponseDto(
 				ResponseStatus.success,
 				"User details successfully updated",
 				new UserResponseDto(
+						accessToken,
 						user.getFullName(),
 						user.getPhoneNumber(),
 						user.getBusinessName(),
@@ -186,9 +197,5 @@ public class UserService implements UserDetailsService {
 		);
 	}
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepository.findByUsername(username)
-				       .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-	}
+
 }

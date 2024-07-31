@@ -33,9 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		var authHeader = request.getHeader("Authorization");
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
+			return;
 		}
-
-		assert authHeader != null;
+		
 		var token = authHeader.substring(7);
 		var username = jwtService.extractUsername(token);
 
