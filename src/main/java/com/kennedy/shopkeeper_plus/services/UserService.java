@@ -13,6 +13,9 @@ import com.kennedy.shopkeeper_plus.repositories.UserRepository;
 import com.kennedy.shopkeeper_plus.utils.ResourceAlreadyExistsException;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import com.kennedy.shopkeeper_plus.utils.Utils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 
 	private final UserRepository userRepository;
@@ -181,5 +184,11 @@ public class UserService {
 				"user account deleted successfully",
 				null
 		);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return userRepository.findByUsername(username)
+				       .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 	}
 }
