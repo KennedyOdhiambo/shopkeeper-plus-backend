@@ -51,7 +51,6 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(Exception.class)
-
 	public ResponseEntity<ResponseDto> handleGeneralException(
 			Exception ex) {
 

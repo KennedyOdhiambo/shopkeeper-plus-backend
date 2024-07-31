@@ -38,32 +38,25 @@ public class UserService {
 	}
 
 	public ResponseDto createUser(NewUserDto newUserDto) {
-		var businessTypeOptional = businessTypeRepository.findById(newUserDto.businessType());
+		var businessType = businessTypeRepository.findById(newUserDto.businessType())
+				                   .orElseThrow(() -> new ResourceNotFoundException("Business type not found"));
 
-
-		if (businessTypeOptional.isEmpty()) {
-			throw new ResourceNotFoundException("Business type not found");
-		}
-		var businessType = businessTypeOptional.get();
 		var formattedPhoneNumber = Utils.formatPhoneNumber(newUserDto.phoneNumber());
 
-		var existingUserOptional = userRepository.findByPhoneNumberAndStatus(formattedPhoneNumber, EntityStatus.ACTIVE);
-		if (existingUserOptional.isPresent()) {
-			throw new ResourceAlreadyExistsException("User with the phone number already exists");
-		}
-
-		var hashedPassword = passwordEncoder.encode(newUserDto.password());
-		var now = LocalDateTime.now();
+		userRepository.findByPhoneNumberAndStatus(formattedPhoneNumber, EntityStatus.ACTIVE)
+				.ifPresent(user -> {
+					throw new ResourceNotFoundException("User with the phone number already exists");
+				});
 
 		User user = new User();
 		user.setFullName(newUserDto.fullName());
 		user.setPhoneNumber(formattedPhoneNumber);
-		user.setPassword(hashedPassword);
+		user.setPassword(passwordEncoder.encode(newUserDto.password()));
 		user.setBusinessName(newUserDto.businessName());
 		user.setBusinessType(businessType);
 		user.setBusinessLocation(newUserDto.businessLocation());
-		user.setDateJoined(now);
-		user.setUsername(newUserDto.phoneNumber());
+		user.setDateJoined(LocalDateTime.now());
+		user.setUsername(Utils.formatPhoneNumber(newUserDto.phoneNumber()));
 		user.setRole(Role.USER);
 
 		user = userRepository.save(user);
