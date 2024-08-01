@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +18,6 @@ import java.math.BigDecimal;
 
 public class SalesItem extends BaseEntity {
 
-
 	@ManyToOne
 	@JoinColumn(name = "sales_id")
 	private Sales sale;
@@ -26,6 +26,7 @@ public class SalesItem extends BaseEntity {
 	@JoinColumn(name = "item_id")
 	private Item item;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "inventory_id")
 	private Inventory inventory;

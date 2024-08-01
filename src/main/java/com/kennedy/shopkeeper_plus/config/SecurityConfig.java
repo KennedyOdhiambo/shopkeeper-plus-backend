@@ -33,7 +33,7 @@ public class SecurityConfig {
 				       .authorizeHttpRequests(
 						       req -> req.requestMatchers("/auth/**", "/user/create/**")
 								              .permitAll()
-								              .requestMatchers("/business-types/**", "/user/list").hasAuthority("ADMIN")
+								              .requestMatchers("/user/list").hasAuthority("ADMIN")
 								              .anyRequest()
 								              .authenticated()
 				       ).userDetailsService(userDetailsServiceImplementation)

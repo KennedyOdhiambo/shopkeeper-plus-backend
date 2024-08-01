@@ -1,5 +1,7 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kennedy.shopkeeper_plus.enums.PaymentOptions;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class Sales extends BaseEntity {
 
 
 	@ManyToOne
+	@JsonManagedReference
 	@JoinColumn(name = "user_id")
 	private User user;
 
@@ -38,6 +41,7 @@ public class Sales extends BaseEntity {
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<SalesItem> salesItems;
 

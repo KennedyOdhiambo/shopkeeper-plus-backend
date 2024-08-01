@@ -1,5 +1,7 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +26,7 @@ public class Item extends BaseEntity {
 	@Column(name = "unit_of_measure", nullable = false)
 	private String unitOfMeasure;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
@@ -31,6 +34,7 @@ public class Item extends BaseEntity {
 	@Column(name = "reorder_level")
 	private Integer reorderLevel;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Inventory> inventory;
 }

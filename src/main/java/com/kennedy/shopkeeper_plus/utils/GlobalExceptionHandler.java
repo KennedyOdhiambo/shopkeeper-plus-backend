@@ -94,4 +94,14 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ResponseDto> handleInsufficientQuantityException(IllegalStateException ex) {
+		var response = new ResponseDto(
+				ResponseStatus.fail,
+				ex.getMessage(),
+				null
+		);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+	}
+
 }

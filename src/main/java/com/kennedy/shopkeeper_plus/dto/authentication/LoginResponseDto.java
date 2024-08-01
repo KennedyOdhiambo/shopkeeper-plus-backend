@@ -9,8 +9,6 @@ public record LoginResponseDto(
 
 		String businessName,
 
-		BusinessType businessType,
-
-		String token
+		BusinessType businessType
 ) {
 }

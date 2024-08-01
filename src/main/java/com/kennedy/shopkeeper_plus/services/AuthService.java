@@ -2,6 +2,7 @@ package com.kennedy.shopkeeper_plus.services;
 
 import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.authentication.LoginRequestDTo;
+import com.kennedy.shopkeeper_plus.dto.authentication.LoginResponseDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.repositories.UserRepository;
@@ -9,13 +10,12 @@ import com.kennedy.shopkeeper_plus.security.JwtService;
 import com.kennedy.shopkeeper_plus.utils.AuthenticationFailedException;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import com.kennedy.shopkeeper_plus.utils.Utils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class AuthService {
@@ -31,7 +31,7 @@ public class AuthService {
 		this.authenticationManager = authenticationManager;
 	}
 
-	public ResponseDto login(LoginRequestDTo loginRequestDTo) {
+	public ResponseDto login(LoginRequestDTo loginRequestDTo, HttpServletResponse response) {
 
 		try {
 			authenticationManager.authenticate(
@@ -45,10 +45,17 @@ public class AuthService {
 					           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 			var accessToken = jwtService.generateAccessToken(user);
 
+			response.addHeader("Authorization", accessToken);
+
 			return new ResponseDto(
 					ResponseStatus.success,
 					"User login was successfull",
-					Map.of("access-token", accessToken)
+					new LoginResponseDto(
+							user.getFullName(),
+							user.getPhoneNumber(),
+							user.getBusinessName(),
+							user.getBusinessType()
+					)
 
 			);
 		} catch (BadCredentialsException ex) {

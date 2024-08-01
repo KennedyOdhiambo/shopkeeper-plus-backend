@@ -1,5 +1,7 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kennedy.shopkeeper_plus.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.List;
 public class CreditDebt extends BaseEntity {
 
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -31,6 +34,7 @@ public class CreditDebt extends BaseEntity {
 	@Column(name = "transaction_date")
 	private LocalDateTime date;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
@@ -42,6 +46,7 @@ public class CreditDebt extends BaseEntity {
 	@Column(name = "transaction_type", nullable = false)
 	private TransactionType transactionType;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "creditDebt", fetch = FetchType.LAZY)
 	private List<Payment> payments;
 

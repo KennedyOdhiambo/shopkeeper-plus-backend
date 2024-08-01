@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 public class Inventory extends BaseEntity {
 
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "item_id")
 	private Item item;

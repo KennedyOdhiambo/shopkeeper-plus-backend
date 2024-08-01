@@ -15,6 +15,8 @@ import com.kennedy.shopkeeper_plus.security.JwtService;
 import com.kennedy.shopkeeper_plus.utils.ResourceAlreadyExistsException;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
 import com.kennedy.shopkeeper_plus.utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ import java.util.UUID;
 
 @Service
 public class UserService {
-
+	private static final Logger logger = LogManager.getLogger(UserService.class);
 
 	private final UserRepository userRepository;
 	private final BusinessTypeRepository businessTypeRepository;
@@ -108,6 +110,7 @@ public class UserService {
 				ResponseStatus.success,
 				"user",
 				userResponseDto
+
 		);
 	}
 

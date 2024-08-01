@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		
+
 		var token = authHeader.substring(7);
 		var username = jwtService.extractUsername(token);
 

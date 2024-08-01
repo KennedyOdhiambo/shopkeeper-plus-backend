@@ -3,6 +3,7 @@ package com.kennedy.shopkeeper_plus.controllers;
 import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.authentication.LoginRequestDTo;
 import com.kennedy.shopkeeper_plus.services.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +21,9 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseDto login(
-			@Valid @RequestBody LoginRequestDTo loginRequestDTo) {
-		return authService.login(loginRequestDTo);
+			@Valid @RequestBody LoginRequestDTo loginRequestDTo,
+			HttpServletResponse response) {
+		return authService.login(loginRequestDTo, response);
 	}
 
 }

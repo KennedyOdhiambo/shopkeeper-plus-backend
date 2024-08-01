@@ -21,7 +21,7 @@ public class BusinessType extends BaseEntity {
 	private String name;
 
 	@JsonBackReference
-	@OneToMany(mappedBy = "businessType", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "businessType", fetch = FetchType.EAGER)
 	private List<User> users;
 
 
