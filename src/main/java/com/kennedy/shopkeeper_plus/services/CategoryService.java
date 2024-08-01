@@ -25,109 +25,84 @@ public class CategoryService {
 	}
 
 	public ResponseDto createCategory(NewCategoryDto newCategoryDto) {
-		try {
-			if (categoryRepository.findByNameAndStatus(newCategoryDto.name(), EntityStatus.ACTIVE).isPresent()) {
-				throw new ResourceAlreadyExistsException("Category with similar name already exists");
-			}
 
-			var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			var category = new Category();
-			category.setUser(userDetails);
-			category.setName(newCategoryDto.name());
-			category.setDescription(newCategoryDto.description());
-
-			return new ResponseDto(
-					ResponseStatus.success,
-					"Category successfully created",
-					category
-			);
-
-		} catch (Exception e) {
-			return new ResponseDto(
-					ResponseStatus.fail,
-					"error creating category" + e,
-					null
-			);
+		if (categoryRepository.findByNameAndStatus(newCategoryDto.name(), EntityStatus.ACTIVE).isPresent()) {
+			throw new ResourceAlreadyExistsException("Category with similar name already exists");
 		}
+
+		var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		var category = new Category();
+		category.setUser(userDetails);
+		category.setName(newCategoryDto.name());
+		category.setDescription(newCategoryDto.description());
+
+		category = categoryRepository.save(category);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Category successfully created",
+				new CategoryListDto(
+						category.getId(),
+						category.getName(),
+						category.getDescription()
+				)
+		);
+
 
 	}
 
 	public ResponseDto updateCategory(UpdateCategoryDto updateCategoryDto) {
-		try {
-			var category = categoryRepository.findByIdAndStatus(updateCategoryDto.categoryId(), EntityStatus.ACTIVE)
-					               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-			var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (category.getUser().getId() != userDetails.getId()) {
-				throw new ResourceNotFoundException("Category not found");
-			}
+		var category = categoryRepository.findByIdAndStatus(updateCategoryDto.categoryId(), EntityStatus.ACTIVE)
+				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-			category.setName(updateCategoryDto.name());
-			category.setDescription(updateCategoryDto.description());
-			categoryRepository.save(category);
 
-			return new ResponseDto(
-					ResponseStatus.success,
-					"Category successfully updates",
-					null
-			);
+		category.setName(updateCategoryDto.name());
+		category.setDescription(updateCategoryDto.description());
+		categoryRepository.save(category);
 
-		} catch (Exception e) {
-			return new ResponseDto(
-					ResponseStatus.fail,
-					"error updating category" + e,
-					null
-			);
-		}
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Category successfully updated",
+				null
+		);
+
+
 	}
 
 	public ResponseDto listCategories() {
-		try {
-			var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			var categories = categoryRepository.findByUserId(userDetails.getId());
-			var categoriesListDtos = categories.stream()
-					                         .map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
-					                         .toList();
 
-			return new ResponseDto(
-					ResponseStatus.success,
-					"categories:",
-					categoriesListDtos
-			);
+		var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		var categories = categoryRepository.findByUserId(userDetails.getId());
+		var categoriesListDtos = categories.stream()
+				                         .map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
+				                         .toList();
 
-		} catch (Exception e) {
+		return new ResponseDto(
+				ResponseStatus.success,
+				"categories:",
+				categoriesListDtos
+		);
 
-			return new ResponseDto(
-					ResponseStatus.fail,
-					"error listing categories" + e,
-					null
-			);
-		}
 
 //
 	}
 
 	public ResponseDto deleteCategory(UUID categoryId) {
-		try {
-			var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
-					               .orElseThrow(() -> new ResourceNotFoundException("category not found"));
 
-			category.setStatus(EntityStatus.DELETED);
-			categoryRepository.save(category);
+		var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
+				               .orElseThrow(() -> new ResourceNotFoundException("category not found"));
 
-			return new ResponseDto(
-					ResponseStatus.success,
-					"category successfully deleted",
-					null
-			);
+		category.setStatus(EntityStatus.DELETED);
+		categoryRepository.save(category);
 
-		} catch (Exception e) {
-			return new ResponseDto(
-					ResponseStatus.fail,
-					"error deleting category" + e,
-					null
-			);
-		}
+		return new ResponseDto(
+				ResponseStatus.success,
+				"category successfully deleted",
+				null
+		);
+
+
 	}
 
 

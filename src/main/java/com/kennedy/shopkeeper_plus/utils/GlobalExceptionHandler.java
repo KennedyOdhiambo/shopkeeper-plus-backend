@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ResponseDto> handleResourceNotFoundException(
 			ResourceNotFoundException ex) {
@@ -58,7 +59,7 @@ public class GlobalExceptionHandler {
 
 		ResponseDto response = new ResponseDto(
 				ResponseStatus.fail,
-				"An unexpected error occurred",
+				"An unexpected error occurred:" + ex.getMessage(),
 				null);
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
