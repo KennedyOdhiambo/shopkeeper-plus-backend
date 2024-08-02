@@ -6,10 +6,5 @@ public record LoginRequestDTo(
 
 		String password
 ) {
-	public String sanitizedToString() {
-		return "LoginRequestDto{" +
-				       "phoneNumber='" + username + '\'' +
-				       ", password='[PROTECTED]'" +
-				       '}';
-	}
+
 }

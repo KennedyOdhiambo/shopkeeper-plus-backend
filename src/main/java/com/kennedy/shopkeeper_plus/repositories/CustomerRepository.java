@@ -14,6 +14,9 @@ import java.util.UUID;
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 	Optional<Customer> findByIdAndStatus(UUID id, EntityStatus status);
 
+
+	Optional<Customer> findByContactAndStatus(String customerContact, EntityStatus status);
+
 	@Query("SELECT c " +
 			       "FROM Customer c " +
 			       "WHERE c.status = 'ACTIVE' " +
