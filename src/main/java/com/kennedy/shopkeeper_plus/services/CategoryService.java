@@ -44,18 +44,14 @@ public class CategoryService {
 				new CategoryListDto(
 						category.getId(),
 						category.getName(),
-						category.getDescription()
-				)
-		);
-
+						category.getDescription()));
 
 	}
 
 	public ResponseDto updateCategory(UpdateCategoryDto updateCategoryDto) {
 
 		var category = categoryRepository.findByIdAndStatus(updateCategoryDto.categoryId(), EntityStatus.ACTIVE)
-				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		category.setName(updateCategoryDto.name());
 		category.setDescription(updateCategoryDto.description());
@@ -64,34 +60,29 @@ public class CategoryService {
 		return new ResponseDto(
 				ResponseStatus.success,
 				"Category successfully updated",
-				null
-		);
-
+				null);
 
 	}
 
 	public ResponseDto listCategories() {
-
 		var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		var categories = categoryRepository.findByUserId(userDetails.getId());
 		var categoriesListDtos = categories.stream()
-				                         .map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
-				                         .toList();
+				.map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
+				.toList();
 
 		return new ResponseDto(
 				ResponseStatus.success,
 				"categories:",
-				categoriesListDtos
-		);
+				categoriesListDtos);
 
-
-//
+		//
 	}
 
 	public ResponseDto deleteCategory(UUID categoryId) {
 
 		var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
-				               .orElseThrow(() -> new ResourceNotFoundException("category not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("category not found"));
 
 		category.setStatus(EntityStatus.DELETED);
 		categoryRepository.save(category);
@@ -99,11 +90,8 @@ public class CategoryService {
 		return new ResponseDto(
 				ResponseStatus.success,
 				"category successfully deleted",
-				null
-		);
-
+				null);
 
 	}
-
 
 }

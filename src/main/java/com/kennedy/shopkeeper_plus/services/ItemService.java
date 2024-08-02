@@ -44,9 +44,7 @@ public class ItemService {
 						item.getCategory(),
 						item.getName(),
 						item.getUnitOfMeasure(),
-						item.getReorderLevel()
-				)
-		);
+						item.getReorderLevel()));
 	}
 
 	public ResponseDto updateItem(UUID itemId, UpdateItemDto updateItemDto) {
@@ -67,9 +65,61 @@ public class ItemService {
 						item.getCategory(),
 						item.getName(),
 						item.getUnitOfMeasure(),
-						item.getReorderLevel()
-				)
+						item.getReorderLevel()));
+	}
+
+	public ResponseDto listItemsByCategory(UUID categoryId) {
+		var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
+				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		var items = itemsRepository.findActiveByCategoryId(category.getId());
+		var response = items.stream()
+				               .map(item -> new ItemResponseDto(
+						               item.getId(),
+						               item.getCategory(),
+						               item.getName(),
+						               item.getUnitOfMeasure(),
+						               item.getReorderLevel()
+				               )).toList();
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Items",
+				response
 		);
 	}
+
+	public ResponseDto deleteItem(UUID itemId) {
+		var item = itemsRepository.findByIdAndStatus(itemId, EntityStatus.ACTIVE)
+				           .orElseThrow(() -> new ResourceNotFoundException("ITem not found"));
+
+		item.setStatus(EntityStatus.DELETED);
+		itemsRepository.save(item);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Item successfully deleted",
+				null
+		);
+	}
+
+	public ResponseDto getItemById(UUID itemId) {
+		var item = itemsRepository.findByIdAndStatus(itemId, EntityStatus.ACTIVE)
+				           .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
+		var response = new ItemResponseDto(
+				item.getId(),
+				item.getCategory(),
+				item.getName(),
+				item.getUnitOfMeasure(),
+				item.getReorderLevel()
+		);
+		return new ResponseDto(
+				ResponseStatus.success,
+				"Item",
+				response
+		);
+	}
+
 
 }

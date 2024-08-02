@@ -21,37 +21,37 @@ public class SecurityConfig {
 	private final UserDetailsServiceImplementation userDetailsServiceImplementation;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	public SecurityConfig(UserDetailsServiceImplementation userDetailsServiceImplementation, JwtAuthenticationFilter jwtAuthenticationFilter) {
+	public SecurityConfig(UserDetailsServiceImplementation userDetailsServiceImplementation,
+			JwtAuthenticationFilter jwtAuthenticationFilter) {
 		this.userDetailsServiceImplementation = userDetailsServiceImplementation;
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-				       .csrf(AbstractHttpConfigurer::disable)
-				       .authorizeHttpRequests(
-						       req -> req.requestMatchers("/auth/**", "/user/create/**")
-								              .permitAll()
-								              .requestMatchers("/user/list").hasAuthority("ADMIN")
-								              .anyRequest()
-								              .authenticated()
-				       ).userDetailsService(userDetailsServiceImplementation)
-				       .sessionManagement(session -> session
-						                                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				       .build();
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(
+						req -> req.requestMatchers("/auth/**", "/user/create/**")
+								.permitAll()
+								.requestMatchers("/user/list").hasAuthority("ADMIN")
+								.anyRequest()
+								.authenticated())
+				.userDetailsService(userDetailsServiceImplementation)
+				.sessionManagement(session -> session
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+				.build();
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+	AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 		return configuration.getAuthenticationManager();
 	}
-
 
 }

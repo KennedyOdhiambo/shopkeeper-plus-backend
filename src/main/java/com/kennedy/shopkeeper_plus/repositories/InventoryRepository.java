@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
-	@Query
-			("SELECT i FROM Inventory i " +
-					 "WHERE i.item.id = :itemId " +
-					 "AND i.status = 'ACTIVE' " +
-					 "AND i.quantityInStock > 0 " +
-					 "ORDER BY i.lastUpdated ASC")
+	@Query("SELECT i FROM Inventory i " +
+			"WHERE i.item.id = :itemId " +
+			"AND i.status = 'ACTIVE' " +
+			"AND i.quantityInStock > 0 " +
+			"ORDER BY i.lastUpdated ASC")
 	List<Inventory> findAvailableInventoryByItemId(@Param("itemId") UUID itemId);
 }
