@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Category extends BaseEntity {
 	@Column(name = "description")
 	private String description;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
 	private List<Item> items;
 

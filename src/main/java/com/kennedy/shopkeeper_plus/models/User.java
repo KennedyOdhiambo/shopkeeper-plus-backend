@@ -69,6 +69,9 @@ public class User extends BaseEntity implements UserDetails {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Category> categories;
 
+	@JsonBackReference
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Item> items;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

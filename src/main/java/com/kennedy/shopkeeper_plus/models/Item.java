@@ -19,6 +19,10 @@ import java.util.List;
 
 public class Item extends BaseEntity {
 
+	@JsonManagedReference
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	@Column(name = "item_name", nullable = false)
 	private String name;

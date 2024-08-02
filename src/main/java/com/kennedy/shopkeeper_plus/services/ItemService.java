@@ -7,9 +7,11 @@ import com.kennedy.shopkeeper_plus.dto.item.UpdateItemDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.Item;
+import com.kennedy.shopkeeper_plus.models.User;
 import com.kennedy.shopkeeper_plus.repositories.CategoryRepository;
 import com.kennedy.shopkeeper_plus.repositories.ItemsRepository;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -25,14 +27,30 @@ public class ItemService {
 	}
 
 	public ResponseDto createItem(NewItemDto newItemDto) {
+		var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		boolean itemExists = itemsRepository.existsByNameIgnoreCaseAndUserAndStatus(
+				newItemDto.name(), user, EntityStatus.ACTIVE
+		);
+
+		if (itemExists) {
+			return new ResponseDto(
+					ResponseStatus.fail,
+					"An item with a similar name already exists in your shop",
+					null
+			);
+		}
+
 		var category = categoryRepository.findByIdAndStatus(newItemDto.categoryId(), EntityStatus.ACTIVE)
 				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		var item = new Item();
+		item.setUser(user);
 		item.setCategory(category);
 		item.setName(newItemDto.name());
 		item.setReorderLevel(newItemDto.reorderLevel());
 		item.setUnitOfMeasure(newItemDto.unitOfMeasure());
+		item.setStatus(EntityStatus.ACTIVE);  // Assuming you want to set the status
 
 		itemsRepository.save(item);
 
@@ -41,10 +59,11 @@ public class ItemService {
 				"Item successfully added to your shop",
 				new ItemResponseDto(
 						item.getId(),
-						item.getCategory(),
 						item.getName(),
 						item.getUnitOfMeasure(),
-						item.getReorderLevel()));
+						item.getReorderLevel()
+				)
+		);
 	}
 
 	public ResponseDto updateItem(UUID itemId, UpdateItemDto updateItemDto) {
@@ -57,26 +76,28 @@ public class ItemService {
 
 		itemsRepository.save(item);
 
+
 		return new ResponseDto(
 				ResponseStatus.success,
 				"Item successfully updated",
 				new ItemResponseDto(
 						item.getId(),
-						item.getCategory(),
 						item.getName(),
 						item.getUnitOfMeasure(),
 						item.getReorderLevel()));
 	}
 
 	public ResponseDto listItemsByCategory(UUID categoryId) {
+		var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
 		var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
 				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-		var items = itemsRepository.findActiveByCategoryId(category.getId());
+		var items = itemsRepository.findByCategoryIdAndUserIdAndStatus(category.getId(), user.getId(), EntityStatus.ACTIVE);
+
 		var response = items.stream()
 				               .map(item -> new ItemResponseDto(
 						               item.getId(),
-						               item.getCategory(),
 						               item.getName(),
 						               item.getUnitOfMeasure(),
 						               item.getReorderLevel()
@@ -109,7 +130,6 @@ public class ItemService {
 
 		var response = new ItemResponseDto(
 				item.getId(),
-				item.getCategory(),
 				item.getName(),
 				item.getUnitOfMeasure(),
 				item.getReorderLevel()
