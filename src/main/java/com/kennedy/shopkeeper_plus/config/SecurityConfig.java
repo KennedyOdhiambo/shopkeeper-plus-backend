@@ -22,7 +22,7 @@ public class SecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	public SecurityConfig(UserDetailsServiceImplementation userDetailsServiceImplementation,
-			JwtAuthenticationFilter jwtAuthenticationFilter) {
+	                      JwtAuthenticationFilter jwtAuthenticationFilter) {
 		this.userDetailsServiceImplementation = userDetailsServiceImplementation;
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 	}
@@ -30,18 +30,18 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-				.csrf(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(
-						req -> req.requestMatchers("/auth/**", "/user/create/**")
-								.permitAll()
-								.requestMatchers("/user/list").hasAuthority("ADMIN")
-								.anyRequest()
-								.authenticated())
-				.userDetailsService(userDetailsServiceImplementation)
-				.sessionManagement(session -> session
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.build();
+				       .csrf(AbstractHttpConfigurer::disable)
+				       .authorizeHttpRequests(
+						       req -> req.requestMatchers("/auth/**", "/user/create/**", "/business-types/**")
+								              .permitAll()
+								              .requestMatchers("/user/list").hasAuthority("ADMIN")
+								              .anyRequest()
+								              .authenticated())
+				       .userDetailsService(userDetailsServiceImplementation)
+				       .sessionManagement(session -> session
+						                                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+				       .build();
 	}
 
 	@Bean

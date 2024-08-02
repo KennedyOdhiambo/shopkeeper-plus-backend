@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
 import com.kennedy.shopkeeper_plus.dto.user.UpdatePasswordDto;
 import com.kennedy.shopkeeper_plus.dto.user.UpdateUserDto;
@@ -29,7 +29,7 @@ public class UserService {
 	private final JwtService jwtService;
 
 	public UserService(JwtService jwtService, UserRepository userRepository,
-			BusinessTypeRepository businessTypeRepository, PasswordEncoder passwordEncoder) {
+	                   BusinessTypeRepository businessTypeRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.businessTypeRepository = businessTypeRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -38,7 +38,7 @@ public class UserService {
 
 	public ResponseDto createUser(NewUserDto newUserDto) {
 		var businessType = businessTypeRepository.findById(newUserDto.businessType())
-				.orElseThrow(() -> new ResourceNotFoundException("Business type not found"));
+				                   .orElseThrow(() -> new ResourceNotFoundException("Business type not found"));
 
 		var formattedPhoneNumber = Utils.formatPhoneNumber(newUserDto.phoneNumber());
 
@@ -87,7 +87,7 @@ public class UserService {
 
 	public ResponseDto getUserById(UUID userId) {
 		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 		var accessToken = "";
 
 		UserResponseDto userResponseDto = new UserResponseDto(
@@ -110,10 +110,10 @@ public class UserService {
 	public ResponseDto updateUser(UpdateUserDto updateUserDto) {
 
 		var user = userRepository.findByIdAndStatus(updateUserDto.id(), EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 		var businessType = businessTypeRepository.findByIdAndStatus(updateUserDto.businessType(), EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("Business type not found"));
+				                   .orElseThrow(() -> new ResourceNotFoundException("Business type not found"));
 
 		var existingPhoneNumber = userRepository.findByPhoneNumberAndStatus(updateUserDto.phoneNumber(),
 				EntityStatus.ACTIVE);
@@ -147,7 +147,7 @@ public class UserService {
 	public ResponseDto updatePassword(UpdatePasswordDto updatePasswordDto) {
 
 		var user = userRepository.findByIdAndStatus(updatePasswordDto.userId(), EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 		if (passwordEncoder.matches(updatePasswordDto.oldPassword(), user.getPassword())) {
 			String newHashedPassword = passwordEncoder.encode(updatePasswordDto.newPassword());
@@ -170,7 +170,7 @@ public class UserService {
 
 	public ResponseDto deleteUser(UUID userId) {
 		var user = userRepository.findByIdAndStatus(userId, EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+				           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 		user.setStatus(EntityStatus.DELETED);
 		userRepository.save(user);

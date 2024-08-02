@@ -1,8 +1,8 @@
 package com.kennedy.shopkeeper_plus.controllers;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.category.NewCategoryDto;
 import com.kennedy.shopkeeper_plus.dto.category.UpdateCategoryDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

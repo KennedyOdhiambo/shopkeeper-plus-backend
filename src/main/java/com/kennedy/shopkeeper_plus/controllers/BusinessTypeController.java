@@ -1,8 +1,8 @@
 package com.kennedy.shopkeeper_plus.controllers;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.NewBusinessTypeDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.UpdateBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.services.BusinessTypeService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

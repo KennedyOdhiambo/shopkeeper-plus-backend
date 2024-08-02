@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.utils;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

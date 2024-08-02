@@ -1,8 +1,8 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.NewBusinessTypeDto;
 import com.kennedy.shopkeeper_plus.dto.business_types.UpdateBusinessTypeDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.BusinessType;

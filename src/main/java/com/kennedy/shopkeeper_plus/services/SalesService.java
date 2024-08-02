@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.sales.NewSalesDto;
 import com.kennedy.shopkeeper_plus.dto.sales.NewSalesItemDto;
 import com.kennedy.shopkeeper_plus.dto.salesItems.PartialSalesItem;

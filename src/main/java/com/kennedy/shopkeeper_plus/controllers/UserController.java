@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.controllers;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.user.NewUserDto;
 import com.kennedy.shopkeeper_plus.dto.user.UpdatePasswordDto;
 import com.kennedy.shopkeeper_plus.dto.user.UpdateUserDto;

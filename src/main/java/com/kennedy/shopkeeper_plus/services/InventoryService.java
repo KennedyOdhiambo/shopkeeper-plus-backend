@@ -1,6 +1,7 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.PaginationResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.inventory.InventoryResponseDto;
 import com.kennedy.shopkeeper_plus.dto.inventory.NewInventoryDto;
 import com.kennedy.shopkeeper_plus.dto.inventory.UpdateInventoryDto;
@@ -10,7 +11,12 @@ import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.Inventory;
 import com.kennedy.shopkeeper_plus.repositories.InventoryRepository;
 import com.kennedy.shopkeeper_plus.repositories.ItemsRepository;
+import com.kennedy.shopkeeper_plus.utils.AppConstants;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +24,7 @@ import java.util.UUID;
 
 @Service
 public class InventoryService {
+
 	private final InventoryRepository inventoryRepository;
 	private final ItemsRepository itemsRepository;
 
@@ -26,7 +33,7 @@ public class InventoryService {
 		this.itemsRepository = itemsRepository;
 	}
 
-	public ResponseDto addInventory(NewInventoryDto newInventoryDto) {
+	public ResponseDto newInventory(NewInventoryDto newInventoryDto) {
 		var item = itemsRepository.findByIdAndStatus(newInventoryDto.itemId(), EntityStatus.ACTIVE)
 				           .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
@@ -63,15 +70,15 @@ public class InventoryService {
 		);
 	}
 
-	public ResponseDto updateInventory(UpdateInventoryDto updateInventoryDto) {
-		var inventoryEntry = inventoryRepository.findByIdAndStatus(updateInventoryDto.inventoryId(), EntityStatus.ACTIVE)
+	public ResponseDto updateInventory(UUID inventoryId, UpdateInventoryDto updateInventoryDto) {
+		var inventoryEntry = inventoryRepository.findByIdAndStatus(inventoryId, EntityStatus.ACTIVE)
 				                     .orElseThrow(() -> new ResourceNotFoundException("Inventory entry does not exist"));
 
 		inventoryEntry.setQuantityInStock(inventoryEntry.getQuantityInStock() + updateInventoryDto.quantityAdded());
 		inventoryEntry.setQuantityAdded(inventoryEntry.getQuantityAdded() + updateInventoryDto.quantityAdded());
 		inventoryEntry.setLastUpdated(LocalDateTime.now());
 
-		var updatedInventory = inventoryRepository.save(inventoryEntry);
+		inventoryEntry = inventoryRepository.save(inventoryEntry);
 		var response = new InventoryResponseDto(
 				inventoryEntry.getId(),
 				new ItemResponseDto(
@@ -93,12 +100,18 @@ public class InventoryService {
 		);
 	}
 
-	public ResponseDto listItemInventory(UUID itemId) {
+	public ResponseDto listItemInventory(UUID itemId, int page) {
+		int pageSize = AppConstants.PAGE_SIZE;
+		page = Math.max(0, page - 1);
+
 		var item = itemsRepository.findByIdAndStatus(itemId, EntityStatus.ACTIVE)
 				           .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
-		var inventoryEntries = inventoryRepository.findAvailableInventoryByItemId(itemId);
-		var response = inventoryEntries.stream()
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastUpdated").descending());
+		Page<Inventory> inventoryPage = inventoryRepository.findAvailableInventoryByItemIdWithPagination(itemId, pageable);
+
+
+		var response = inventoryPage.getContent().stream()
 				               .map(entry -> new InventoryResponseDto(
 						               entry.getId(),
 						               new ItemResponseDto(
@@ -114,10 +127,17 @@ public class InventoryService {
 						               entry.getLastUpdated()
 				               )).toList();
 
+		var paginationResponse = new PaginationResponseDto<>(
+				response,
+				inventoryPage.getTotalElements(),
+				inventoryPage.getTotalPages(),
+				inventoryPage.getNumber() + 1
+		);
+
 		return new ResponseDto(
 				ResponseStatus.success,
 				"Inventory entries for" + item.getName(),
-				response
+				paginationResponse
 		);
 	}
 

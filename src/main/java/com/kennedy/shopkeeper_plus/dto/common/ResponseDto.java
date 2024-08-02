@@ -1,4 +1,4 @@
-package com.kennedy.shopkeeper_plus.dto;
+package com.kennedy.shopkeeper_plus.dto.common;
 
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 

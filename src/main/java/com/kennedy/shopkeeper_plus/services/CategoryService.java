@@ -1,9 +1,9 @@
 package com.kennedy.shopkeeper_plus.services;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.category.CategoryListDto;
 import com.kennedy.shopkeeper_plus.dto.category.NewCategoryDto;
 import com.kennedy.shopkeeper_plus.dto.category.UpdateCategoryDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.enums.EntityStatus;
 import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.models.Category;
@@ -51,7 +51,7 @@ public class CategoryService {
 	public ResponseDto updateCategory(UpdateCategoryDto updateCategoryDto) {
 
 		var category = categoryRepository.findByIdAndStatus(updateCategoryDto.categoryId(), EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+				               .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		category.setName(updateCategoryDto.name());
 		category.setDescription(updateCategoryDto.description());
@@ -68,8 +68,8 @@ public class CategoryService {
 		var userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		var categories = categoryRepository.findByUserId(userDetails.getId());
 		var categoriesListDtos = categories.stream()
-				.map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
-				.toList();
+				                         .map(category -> new CategoryListDto(category.getId(), category.getName(), category.getDescription()))
+				                         .toList();
 
 		return new ResponseDto(
 				ResponseStatus.success,
@@ -82,7 +82,7 @@ public class CategoryService {
 	public ResponseDto deleteCategory(UUID categoryId) {
 
 		var category = categoryRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("category not found"));
+				               .orElseThrow(() -> new ResourceNotFoundException("category not found"));
 
 		category.setStatus(EntityStatus.DELETED);
 		categoryRepository.save(category);

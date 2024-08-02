@@ -1,6 +1,6 @@
 package com.kennedy.shopkeeper_plus.controllers;
 
-import com.kennedy.shopkeeper_plus.dto.ResponseDto;
+import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.item.NewItemDto;
 import com.kennedy.shopkeeper_plus.dto.item.UpdateItemDto;
 import com.kennedy.shopkeeper_plus.services.ItemService;

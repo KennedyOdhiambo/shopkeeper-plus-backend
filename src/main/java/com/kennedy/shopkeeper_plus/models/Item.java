@@ -39,6 +39,6 @@ public class Item extends BaseEntity {
 	private Integer reorderLevel;
 
 	@JsonBackReference
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Inventory> inventory;
 }
