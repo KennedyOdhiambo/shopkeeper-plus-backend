@@ -1,5 +1,8 @@
 package com.kennedy.shopkeeper_plus.utils;
 
+import com.kennedy.shopkeeper_plus.models.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -16,5 +19,9 @@ public class Utils {
 
 	public static LocalDate convertToLocalDate(String dateString) {
 		return LocalDate.parse(dateString, FORMATTER);
+	}
+
+	public static User getCurrentUser() {
+		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 }

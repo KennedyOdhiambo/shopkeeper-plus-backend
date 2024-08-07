@@ -1,5 +1,6 @@
 package com.kennedy.shopkeeper_plus.services;
 
+import com.kennedy.shopkeeper_plus.dto.common.PaginationResponseDto;
 import com.kennedy.shopkeeper_plus.dto.common.ResponseDto;
 import com.kennedy.shopkeeper_plus.dto.sales.NewSalesDto;
 import com.kennedy.shopkeeper_plus.dto.sales.NewSalesItemDto;
@@ -12,9 +13,16 @@ import com.kennedy.shopkeeper_plus.enums.ResponseStatus;
 import com.kennedy.shopkeeper_plus.enums.TransactionType;
 import com.kennedy.shopkeeper_plus.models.*;
 import com.kennedy.shopkeeper_plus.repositories.*;
+import com.kennedy.shopkeeper_plus.utils.AppConstants;
 import com.kennedy.shopkeeper_plus.utils.ResourceNotFoundException;
+import com.kennedy.shopkeeper_plus.utils.Utils;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,10 +30,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class SalesService {
+	private static final Logger logger = LogManager.getLogger(SalesService.class);
 
 
 	private final SalesRepository salesRepository;
@@ -49,10 +59,10 @@ public class SalesService {
 	@Transactional
 	public ResponseDto createSale(NewSalesDto newSalesDto) {
 
-		var userDetails = getCurrentUser();
+		User userDetails = Utils.getCurrentUser();
 		LocalDate now = LocalDate.now();
 
-		var customer = getCustomerForSale(newSalesDto);
+		Customer customer = getCustomerForSale(newSalesDto);
 		List<PartialSalesItem> partialSalesItemList = processItems(newSalesDto.items());
 		BigDecimal totalCost = calculateTotalCost(partialSalesItemList);
 
@@ -76,6 +86,44 @@ public class SalesService {
 
 	}
 
+	public ResponseDto listSales(int page,
+	                             LocalDate startDate,
+	                             LocalDate endDate,
+	                             PaymentOptions paymentOptions,
+	                             UUID customerId) {
+		int pageSize = AppConstants.PAGE_SIZE;
+		page = Math.max(0, page - 1);
+
+		logger.info(startDate.toString());
+
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by("salesDate").descending());
+		Page<Sales> salesPage = salesRepository.findByFilters(startDate, endDate, paymentOptions, customerId, pageable);
+
+		List<SalesResponseDto> response = salesPage.getContent().stream()
+				                                  .map(entry -> new SalesResponseDto(
+						                                  entry.getId(),
+						                                  entry.getSalesDate(),
+						                                  entry.getPaymentOption(),
+						                                  entry.getTotalCost(),
+						                                  toSalesItemResponseDtos(
+								                                  entry.getSalesItems()
+						                                  )
+				                                  )).toList();
+
+		var paginatedResponse = new PaginationResponseDto<>(
+				response,
+				salesPage.getTotalElements(),
+				salesPage.getTotalPages(),
+				salesPage.getNumber() + 1
+		);
+
+		return new ResponseDto(
+				ResponseStatus.success,
+				"sales",
+				paginatedResponse
+		);
+	}
+
 	private List<NewSalesItemResponseDto> toSalesItemResponseDtos(List<SalesItem> salesItems) {
 		return salesItems.stream()
 				       .map(item -> new NewSalesItemResponseDto(
@@ -87,9 +135,6 @@ public class SalesService {
 				       )).toList();
 	}
 
-	private User getCurrentUser() {
-		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	}
 
 	private Customer getCustomerForSale(NewSalesDto newSalesDto) {
 		Optional<Customer> customer = customerRepository.findByIdAndStatus(newSalesDto.customerId(), EntityStatus.ACTIVE);
@@ -174,7 +219,7 @@ public class SalesService {
 
 	private void handleCreditSale(NewSalesDto newSalesDto, Sales sale, Customer customer, BigDecimal totalCost, LocalDate now) {
 		if (PaymentOptions.CREDIT.equals(newSalesDto.paymentOption())) {
-			CreditDebt creditDebt = new CreditDebt(getCurrentUser(), sale, now.atStartOfDay(), customer, totalCost, TransactionType.CREDIT, null);
+			CreditDebt creditDebt = new CreditDebt(Utils.getCurrentUser(), sale, now.atStartOfDay(), customer, totalCost, TransactionType.CREDIT, null);
 			creditDebtRepository.save(creditDebt);
 		}
 	}
