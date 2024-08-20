@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shopkeeper-plus
+    username: postgres
+    password: '@ddiTCha98'
+  output:
+    ansi:
+      enabled: ALWAYS
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  servlet:
+    context-path: /shopkeeper-plus/v1
+security:
+  jwt:
+    secret-key: cf8042b709a61cb764a00f65e1dc932e47859705826f0b8c5992fbc88c378584
+    expiration-time: 3600000

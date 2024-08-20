@@ -218,8 +218,9 @@ public class SalesService {
 	}
 
 	private void handleCreditSale(NewSalesDto newSalesDto, Sales sale, Customer customer, BigDecimal totalCost, LocalDate now) {
+		var currentUser = Utils.getCurrentUser();
 		if (PaymentOptions.CREDIT.equals(newSalesDto.paymentOption())) {
-			CreditDebt creditDebt = new CreditDebt(Utils.getCurrentUser(), sale, now.atStartOfDay(), customer, totalCost, TransactionType.CREDIT, null);
+			CreditDebt creditDebt = new CreditDebt(currentUser, sale, now.atStartOfDay(), customer, totalCost, TransactionType.CREDIT, null);
 			creditDebtRepository.save(creditDebt);
 		}
 	}
